@@ -30,7 +30,7 @@ steps:
     provider: 'azurerm'
     command: 'plan'
     workingDirectory: '$(System.DefaultWorkingDirectory)/azure_vm/terraform'
-    environmentServiceNameAzureRM: 'ado-terraform-conn'
+    environmentServiceNameAzureRM: 'terraform-azure-sp-conn'
 
 # Terraform Apply
 - task: TerraformTaskV4@4
