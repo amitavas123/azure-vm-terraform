@@ -4,35 +4,40 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-# Authenticate to Azure using the Service Connection
-- task: AzureCLI@2
-  displayName: "Export SP credentials"
-  inputs:
-    azureSubscription: "ado-terraform-conn"
-    scriptType: bash
-    scriptLocation: inlineScript
-    inlineScript: |
-      echo "ARM_CLIENT_ID=$servicePrincipalId" >> $BASH_ENV
-      echo "ARM_CLIENT_SECRET=$servicePrincipalKey" >> $BASH_ENV
-      echo "ARM_TENANT_ID=$tenantId" >> $BASH_ENV
-      echo "ARM_SUBSCRIPTION_ID=$subscriptionId" >> $BASH_ENV
-      source $BASH_ENV
-      echo "Logged in to Azure"
-
 # Install Terraform
-- bash: |
-    sudo apt-get update -y
-    sudo apt-get install -y gnupg software-properties-common curl
-    curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-    sudo apt-add-repository "deb https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-    sudo apt-get update -y
-    sudo apt-get install -y terraform
+- task: TerraformInstaller@1
   displayName: "Install Terraform"
+  inputs:
+    terraformVersion: 'latest'
 
-# Run Terraform from the terraform directory
-- bash: |
-    cd azure_vm/terraform
-    terraform init
-    terraform plan -out=tfplan
-    terraform apply -auto-approve tfplan
-  displayName: "Run Terraform"
+# Terraform Init with AzureRM backend
+- task: TerraformTaskV4@4
+  displayName: "Terraform Init"
+  inputs:
+    provider: 'azurerm'
+    command: 'init'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/azure_vm/terraform'
+    backendServiceArm: 'ado-terraform-conn'
+    backendAzureRmResourceGroupName: 'ams-first-resourcegorup'
+    backendAzureRmStorageAccountName: 'myfirstamsstorageaccount'
+    backendAzureRmContainerName: 'myfirstamsstoragecontainer'
+    backendAzureRmKey: 'terraform.tfstate'
+
+# Terraform Plan
+- task: TerraformTaskV4@4
+  displayName: "Terraform Plan"
+  inputs:
+    provider: 'azurerm'
+    command: 'plan'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/azure_vm/terraform'
+    environmentServiceNameAzureRM: 'ado-terraform-conn'
+
+# Terraform Apply
+- task: TerraformTaskV4@4
+  displayName: "Terraform Apply"
+  inputs:
+    provider: 'azurerm'
+    command: 'apply'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/azure_vm/terraform'
+    environmentServiceNameAzureRM: 'ado-terraform-conn'
+    commandOptions: '-auto-approve'
