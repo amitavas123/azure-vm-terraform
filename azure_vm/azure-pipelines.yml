@@ -6,12 +6,17 @@ pool:
 steps:
 # Authenticate to Azure using the Service Connection
 - task: AzureCLI@2
-  displayName: "Azure Login"
+  displayName: "Export SP credentials"
   inputs:
-    azureSubscription: "ado-terraform-conn"   # <-- your service connection name
+    azureSubscription: "ado-terraform-conn"
     scriptType: bash
     scriptLocation: inlineScript
     inlineScript: |
+      echo "ARM_CLIENT_ID=$servicePrincipalId" >> $BASH_ENV
+      echo "ARM_CLIENT_SECRET=$servicePrincipalKey" >> $BASH_ENV
+      echo "ARM_TENANT_ID=$tenantId" >> $BASH_ENV
+      echo "ARM_SUBSCRIPTION_ID=$subscriptionId" >> $BASH_ENV
+      source $BASH_ENV
       echo "Logged in to Azure"
 
 # Install Terraform
