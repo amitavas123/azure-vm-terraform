@@ -17,10 +17,10 @@ steps:
     provider: 'azurerm'
     command: 'init'
     workingDirectory: '$(System.DefaultWorkingDirectory)/azure_vm/terraform'
-    backendServiceArm: 'ado-terraform-conn'
-    backendAzureRmResourceGroupName: 'ams-first-resourcegorup'
-    backendAzureRmStorageAccountName: 'myfirstamsstorageaccount'
-    backendAzureRmContainerName: 'myfirstamsstoragecontainer'
+    backendServiceArm: 'terraform-azure-sp-conn'
+    backendAzureRmResourceGroupName: 'Staging_VMs'
+    backendAzureRmStorageAccountName: 'storagevmazuredevopsacc'
+    backendAzureRmContainerName: 'storagevmazuredevopscontainer'
     backendAzureRmKey: 'terraform.tfstate'
 
 # Terraform Plan
@@ -39,5 +39,5 @@ steps:
     provider: 'azurerm'
     command: 'apply'
     workingDirectory: '$(System.DefaultWorkingDirectory)/azure_vm/terraform'
-    environmentServiceNameAzureRM: 'ado-terraform-conn'
+    environmentServiceNameAzureRM: 'terraform-azure-sp-conn'
     commandOptions: '-auto-approve'
