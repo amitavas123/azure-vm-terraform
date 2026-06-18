@@ -4,23 +4,30 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-- task: Bash@3
-  displayName: "Terraform Init"
+# Authenticate to Azure using the Service Connection
+- task: AzureCLI@2
+  displayName: "Azure Login"
   inputs:
-    targetType: inline
-    script: |
-      terraform init
+    azureSubscription: "ado-terraform-conn"   # <-- your service connection name
+    scriptType: bash
+    scriptLocation: inlineScript
+    inlineScript: |
+      echo "Logged in to Azure"
 
-- task: Bash@3
-  displayName: "Terraform Plan"
-  inputs:
-    targetType: inline
-    script: |
-      terraform plan -out=tfplan
+# Install Terraform
+- bash: |
+    sudo apt-get update -y
+    sudo apt-get install -y gnupg software-properties-common curl
+    curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+    sudo apt-add-repository "deb https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+    sudo apt-get update -y
+    sudo apt-get install -y terraform
+  displayName: "Install Terraform"
 
-- task: Bash@3
-  displayName: "Terraform Apply"
-  inputs:
-    targetType: inline
-    script: |
-      terraform apply -auto-approve tfplan
+# Run Terraform from the terraform directory
+- bash: |
+    cd terraform
+    terraform init
+    terraform plan -out=tfplan
+    terraform apply -auto-approve tfplan
+  displayName: "Run Terraform"
