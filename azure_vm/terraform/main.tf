@@ -1,9 +1,9 @@
 terraform {
   backend "azurerm" {
-    resource_group_name  = "rg-tfstate"
-    storage_account_name = "tfstate12345"
-    container_name       = "tfstate"
-    key                  = "vm.tfstate"
+    resource_group_name  = "Staging_VMs"
+    storage_account_name = "storagevmazuredevopsacc"
+    container_name       = "storagevmazuredevopscontainer"
+    key                  = "terraform.tfstate"
   }
 }
 
