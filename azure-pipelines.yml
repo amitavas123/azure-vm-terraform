@@ -31,7 +31,10 @@ steps:
     command: 'plan'
     workingDirectory: '$(System.DefaultWorkingDirectory)/azure_vm/terraform'
     environmentServiceNameAzureRM: 'terraform-azure-sp-conn'
-    commandOptions: '-var-file="terraform.tfvars" -detailed-exitcode'
+    commandOptions: >
+      -var-file="terraform.tfvars"
+      -var "ssh_public_key=$(SSH_PUBLIC_KEY)"
+      -detailed-exitcode
 
 # Terraform Apply
 - task: TerraformTaskV4@4
@@ -41,4 +44,7 @@ steps:
     command: 'apply'
     workingDirectory: '$(System.DefaultWorkingDirectory)/azure_vm/terraform'
     environmentServiceNameAzureRM: 'terraform-azure-sp-conn'
-    commandOptions: '-var-file="terraform.tfvars" -auto-approve'
+    commandOptions: >
+      -var-file="terraform.tfvars"
+      -var "ssh_public_key=$(SSH_PUBLIC_KEY)"
+      -auto-approve
