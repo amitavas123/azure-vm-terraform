@@ -38,10 +38,10 @@ steps:
 
 # Terraform Apply
 - task: TerraformTaskV4@4
-  displayName: "Terraform Apply"
+  displayName: "Terraform destroy"
   inputs:
     provider: 'azurerm'
-    command: 'apply'
+    command: 'destroy'
     workingDirectory: '$(System.DefaultWorkingDirectory)/azure_vm/terraform'
     environmentServiceNameAzureRM: 'terraform-azure-sp-conn'
     commandOptions: >
