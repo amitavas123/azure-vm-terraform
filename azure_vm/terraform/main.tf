@@ -7,7 +7,6 @@ terraform {
   }
 }
 
-
 provider "azurerm" {
   features {}
 }
@@ -62,9 +61,16 @@ resource "azurerm_linux_virtual_machine" "vm" {
     azurerm_network_interface.nic.id
   ]
 
+  # FIX: Use variable instead of file("~/.ssh/...") 
   admin_ssh_key {
     username   = "azureuser"
-    public_key = file("~/.ssh/id_rsa.pub")
+    public_key = var.ssh_public_key
+  }
+
+  # FIX: Required os_disk block
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
   }
 
   source_image_reference {
