@@ -1,2 +1,2 @@
-rg_name  = "Staging_VMs"
+rg_name  = "azuredevoops_VMs"
 location = "Australia Southeast"
